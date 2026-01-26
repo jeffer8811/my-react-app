@@ -1,16 +1,20 @@
-import { useState } from 'react'
+import { useEffect, useState } from "react";
 
-function Counter() {
-  const [count, setCount] = useState(0)
+function App() {
+  const [msg, setMsg] = useState("");
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/test")
+      .then(res => res.text())
+      .then(data => setMsg(data));
+  }, []);
 
   return (
-    <>
-      <h2>Contador</h2>
-      <button onClick={() => setCount(count + 1)}>
-        Clicks: {count}
-      </button>
-    </>
-  )
+    <div>
+      <h1>Frontend React</h1>
+      <p>{msg}</p>
+    </div>
+  );
 }
 
-export default Counter
+export default App;

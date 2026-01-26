@@ -1,0 +1,171 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ===== FONDO ===== */
+.login-bg {
+  height: 100vh;
+  background: linear-gradient(135deg, #0f172a, #2563eb);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ===== BURBUJAS ===== */
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  animation: float 12s infinite ease-in-out;
+}
+
+.b1 {
+  width: 120px;
+  height: 120px;
+  left: 10%;
+  bottom: -100px;
+}
+
+.b2 {
+  width: 200px;
+  height: 200px;
+  right: 15%;
+  bottom: -150px;
+  animation-delay: 2s;
+}
+
+.b3 {
+  width: 80px;
+  height: 80px;
+  left: 45%;
+  bottom: -80px;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-120vh);
+  }
+}
+
+/* ===== CARD ===== */
+.login-wrapper {
+  width: 900px;
+  height: 500px;
+  background: white;
+  border-radius: 20px;
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 1s ease;
+}
+
+/* ===== IZQUIERDA CON IMAGEN ===== */
+.login-image {
+  flex: 1;
+  background: url("../assets/bienvenida.png.png") center/cover no-repeat;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 2.5rem;
+}
+
+/* capa oscura */
+.login-image::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(15, 23, 42, 0.75),
+    rgba(15, 23, 42, 0.2)
+  );
+}
+.login-image-content {
+  position: relative;
+  color: white;
+  animation: slideUp 1.2s ease;
+}
+
+.login-image-content h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+}
+
+.login-image-content p {
+  font-size: 1.15rem;
+  opacity: 0.95;
+}
+
+/* ===== FORM ===== */
+.login-form {
+  flex: 1;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.2rem;
+}
+
+.login-form h2 {
+  margin-bottom: 1rem;
+}
+
+.login-form input {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #c33764;
+}
+
+.login-form button {
+  padding: 12px;
+  background: linear-gradient(135deg, #38bdf8, #2563eb);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.login-form button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
