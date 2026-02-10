@@ -1,0 +1,151 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ===== FONDO ===== */
+.admin-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #020617, #1e40af);
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== BURBUJAS ===== */
+.admin-bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  animation: floatAdmin 14s infinite ease-in-out;
+}
+
+.ab1 {
+  width: 150px;
+  height: 150px;
+  left: 5%;
+  bottom: -120px;
+}
+
+.ab2 {
+  width: 220px;
+  height: 220px;
+  right: 10%;
+  bottom: -160px;
+  animation-delay: 3s;
+}
+
+.ab3 {
+  width: 90px;
+  height: 90px;
+  left: 50%;
+  bottom: -100px;
+  animation-delay: 6s;
+}
+
+@keyframes floatAdmin {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-120vh);
+  }
+}
+
+/* ===== CONTENEDOR ===== */
+.admin-wrapper {
+  max-width: 1100px;
+  margin: auto;
+  background: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+  animation: fadeIn 1s ease;
+}
+
+/* ===== HEADER ===== */
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+  font-size: 2.2rem;
+  color: #0f172a;
+}
+
+.admin-header span {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* ===== GRID ===== */
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ===== CARD ===== */
+.admin-card {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  padding: 1.8rem;
+  border-radius: 16px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.admin-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 25px 45px rgba(37, 99, 235, 0.35);
+}
+
+.admin-card h3 {
+  margin-bottom: 0.5rem;
+  color: #1e3a8a;
+}
+
+.admin-card p {
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+/* ===== LOGOUT ===== */
+.admin-logout {
+  margin-top: 2.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.admin-logout button {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.admin-logout button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(185, 28, 28, 0.45);
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

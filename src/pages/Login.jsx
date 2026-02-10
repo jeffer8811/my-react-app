@@ -1,6 +1,6 @@
 import "./Login.css";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
 function Login() {
@@ -8,36 +8,49 @@ function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
+    console.log("🔵 Intentando iniciar sesión...");
+    console.log("📧 Usuario:", usuario);
+
     try {
       const response = await api.post("/auth/login", {
         username: usuario,
-        password,
+        password: password,
       });
 
       const user = response.data;
 
+      console.log("✅ Login exitoso");
+      console.log("👤 Usuario autenticado:", user);
+
       localStorage.setItem("user", JSON.stringify(user));
 
       if (user.role === "ADMIN") {
-        window.location.href = "/admin";
+        console.log("➡️ Redirigiendo a /Admin");
+        navigate("/Admin");
       } else if (user.role === "PROFESSOR") {
-        window.location.href = "/teacher";
+        console.log("➡️ Redirigiendo a /teacher");
+        navigate("/teacher");
       } else {
-        window.location.href = "/student";
+        console.log("➡️ Redirigiendo a /student");
+        navigate("/student");
       }
+
     } catch (err) {
+      console.error("❌ Error al iniciar sesión");
+      console.error(err);
+
       setError("Usuario o contraseña incorrectos");
     }
   };
 
   return (
     <div className="login-bg">
-
-      {/* BURBUJAS */}
       <div className="bubble b1"></div>
       <div className="bubble b2"></div>
       <div className="bubble b3"></div>
@@ -58,6 +71,7 @@ function Login() {
             placeholder="Usuario"
             value={usuario}
             onChange={(e) => setUsuario(e.target.value)}
+            required
           />
 
           <input
@@ -65,6 +79,7 @@ function Login() {
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
 
           {error && <p style={{ color: "red" }}>{error}</p>}
