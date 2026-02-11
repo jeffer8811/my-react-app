@@ -1,3 +1,4 @@
+/* ===== RESET ===== */
 * {
   margin: 0;
   padding: 0;
@@ -14,7 +15,7 @@
   overflow: hidden;
 }
 
-/* ===== BURBUJAS ===== */
+/* ===== BURBUJAS ANIMADAS ===== */
 .admin-bubble {
   position: absolute;
   border-radius: 50%;
@@ -22,36 +23,13 @@
   animation: floatAdmin 14s infinite ease-in-out;
 }
 
-.ab1 {
-  width: 150px;
-  height: 150px;
-  left: 5%;
-  bottom: -120px;
-}
-
-.ab2 {
-  width: 220px;
-  height: 220px;
-  right: 10%;
-  bottom: -160px;
-  animation-delay: 3s;
-}
-
-.ab3 {
-  width: 90px;
-  height: 90px;
-  left: 50%;
-  bottom: -100px;
-  animation-delay: 6s;
-}
+.ab1 { width: 150px; height: 150px; left: 5%; bottom: -120px; }
+.ab2 { width: 220px; height: 220px; right: 10%; bottom: -160px; animation-delay: 3s; }
+.ab3 { width: 90px; height: 90px; left: 50%; bottom: -100px; animation-delay: 6s; }
 
 @keyframes floatAdmin {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-120vh);
-  }
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-120vh); }
 }
 
 /* ===== CONTENEDOR ===== */
@@ -83,7 +61,7 @@
   font-weight: 600;
 }
 
-/* ===== GRID ===== */
+/* ===== GRID (para tarjetas) ===== */
 .admin-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -105,15 +83,8 @@
   box-shadow: 0 25px 45px rgba(37, 99, 235, 0.35);
 }
 
-.admin-card h3 {
-  margin-bottom: 0.5rem;
-  color: #1e3a8a;
-}
-
-.admin-card p {
-  font-size: 0.95rem;
-  color: #334155;
-}
+.admin-card h3 { margin-bottom: 0.5rem; color: #1e3a8a; }
+.admin-card p { font-size: 0.95rem; color: #334155; }
 
 /* ===== LOGOUT ===== */
 .admin-logout {
@@ -140,12 +111,157 @@
 
 /* ===== ANIMACIONES ===== */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(25px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== FILTROS ===== */
+.filters {
+  margin-bottom: 15px;
+}
+
+.filters select,
+.filters button {
+  margin-right: 5px;
+  padding: 5px 10px;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.filters button {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  transition: 0.2s;
+}
+
+.filters button:hover {
+  background-color: #1e40af;
+}
+
+/* ===== LISTA DE ALUMNOS ===== */
+.student-list {
+  list-style: none;
+  margin-top: 10px;
+}
+
+.student-list li {
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.student-list li button {
+  margin-left: 5px;
+  padding: 4px 8px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.student-list li button:hover {
+  background-color: #1e40af;
+}
+
+/* ===== MODAL ===== */
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 450px;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content h3 {
+  margin-bottom: 15px;
+  color: #0f172a;
+}
+
+.modal-content input,
+.modal-content select {
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-buttons button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.modal-buttons button:first-child {
+  background-color: #2563eb;
+  color: white;
+}
+
+.modal-buttons button:first-child:hover {
+  background-color: #1e40af;
+}
+
+.modal-buttons button:last-child {
+  background-color: #ef4444;
+  color: white;
+  margin-left: 5px;
+}
+
+.modal-buttons button:last-child:hover {
+  background-color: #b91c1c;
+}
+.tab-content {
+  position: relative;
+}
+
+.tab-panel {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 0;
+}
+
+.tab-panel.show {
+  opacity: 1;
+  transform: translateY(0);
+  position: relative;
+}
+
+.tab-panel.hide {
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+}
+
+.filters button.active {
+  background-color: #2563eb;
+  color: white;
 }
