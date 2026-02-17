@@ -12,34 +12,16 @@ function App() {
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-<Route
-  path="/admin"
-  element={
-    <ProtectedRoute allowedRoles={["ADMIN"]}>
-      <Admin />
-    </ProtectedRoute>
-  }
-/>
-
-
-
+      <Route path="/student" element={<Student />} />
       <Route
-        path="/teacher"
+        path="/admin"
         element={
-          <ProtectedRoute allowedRoles={["TEACHER"]}>
-            <Teacher />
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <Admin />
           </ProtectedRoute>
         }
       />
-
-      <Route
-        path="/student"
-        element={
-          <ProtectedRoute allowedRoles={["STUDENT"]}>
-            <Student />
-          </ProtectedRoute>
-        }
-      />
+      {/* ... resto de tus rutas */}
     </Routes>
   );
 }

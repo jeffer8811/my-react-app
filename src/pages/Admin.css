@@ -5,7 +5,6 @@
   box-sizing: border-box;
   font-family: "Segoe UI", sans-serif;
 }
-
 /* ===== FONDO ===== */
 .admin-bg {
   min-height: 100vh;
@@ -264,4 +263,344 @@
 .filters button.active {
   background-color: #2563eb;
   color: white;
+}
+.modal-content {
+  width: 500px;
+  max-width: 90%;
+}
+
+.student-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Dos columnas */
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 0.85em;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.full-width {
+  grid-column: span 2; /* Campo que ocupa todo el ancho */
+}
+
+.modal-buttons {
+  grid-column: span 2;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: white;
+}
+
+.admin-table th, .admin-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.admin-table th {
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+/* Badges de Pago */
+.badge {
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.badge.paid { background: #d4edda; color: #155724; }
+.badge.late { background: #f8d7da; color: #721c24; }
+.badge.pending { background: #fff3cd; color: #856404; }
+
+.btn-edit {
+  background: none;
+  border: 1px solid #007bff;
+  color: #007bff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Contenedor principal del buscador */
+.search-box {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 50px; /* Bordes redondeados tipo píldora */
+  padding: 5px 15px;
+  transition: all 0.3s ease;
+  width: fit-content;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Efecto cuando el usuario hace clic para escribir */
+.search-box:focus-within {
+  border-color: #4a90e2; /* Azul profesional */
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Estilo del Input */
+.search-box input {
+  border: none;
+  outline: none;
+  padding: 10px;
+  font-size: 14px;
+  width: 180px; /* Ancho ajustable */
+  color: #333;
+  background: transparent;
+}
+
+.search-box input::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* Estilo del Botón de Lupa */
+.btn-search {
+  background: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 50%; /* Botón circular */
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  font-size: 16px;
+  margin-left: 5px;
+}
+
+.btn-search:hover {
+  background: #357abd;
+  transform: scale(1.1); /* Se agranda un poco al pasar el mouse */
+}
+
+.btn-search:active {
+  transform: scale(0.9); /* Efecto de rebote al hacer clic */
+}
+
+/* Divisor opcional si quieres separar el input del botón visualmente */
+.divider-vertical {
+  width: 1px;
+  height: 25px;
+  background-color: #eee;
+  margin: 0 10px;
+}
+.btn-delete:hover {
+  background-color: #ef4444 !important;
+  color: white !important;
+  transition: 0.3s;
+}
+/* Contenedor principal de la pestaña */
+.assignment-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* El formulario a la izquierda, la tabla a la derecha */
+  gap: 25px;
+  margin-top: 20px;
+  animation: fadeIn 0.5s ease;
+}
+
+/* Tarjetas (Cards) */
+.assignment-card, .list-card {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border: 1px solid #edf2f7;
+}
+
+.assignment-card h3, .list-card h3 {
+  font-size: 1.1rem;
+  color: #2d3748;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #3182ce;
+  padding-bottom: 8px;
+  display: inline-block;
+}
+
+/* Formulario Mini */
+.mini-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background-color: #f8fafc;
+  transition: 0.3s;
+}
+
+.form-input:focus {
+  border-color: #3182ce;
+  background-color: #fff;
+  outline: none;
+}
+
+.flex-row {
+  display: flex;
+  gap: 10px;
+}
+
+/* Botón de Asignación */
+.btn-assign {
+  background: #3182ce;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 10px;
+}
+
+.btn-assign:hover {
+  background: #2b6cb0;
+}
+
+/* Tabla Moderna */
+.table-wrapper {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.modern-table th {
+  background: #f7fafc;
+  padding: 12px;
+  text-align: left;
+  color: #718096;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+
+.modern-table td {
+  padding: 12px;
+  border-bottom: 1px solid #edf2f7;
+  color: #4a5568;
+}
+
+.modern-table tr:hover {
+  background-color: #f1f5f9;
+}
+
+/* Etiquetas (Tags) */
+.tag-grade {
+  background: #ebf8ff;
+  color: #2b6cb0;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+/* Botón Eliminar */
+.btn-delete-small {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: transform 0.2s;
+}
+
+.btn-delete-small:hover {
+  transform: scale(1.2);
+}
+
+/* Badge de conteo */
+.badge-count {
+  background: #3182ce;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.admin-header-flex {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Adaptabilidad para Celulares */
+@media (max-width: 768px) {
+  .assignment-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* ===== BOTÓN REGISTRAR NUEVO (GENERAL) ===== */
+.btn-add {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8); /* Azul vibrante */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.btn-add:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  transform: translateY(-2px); /* Efecto de elevación */
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+}
+
+.btn-add:active {
+  transform: translateY(0); /* Efecto de pulsación */
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+}
+
+
+/* Alineación en el header */
+.admin-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f1f5f9;
 }

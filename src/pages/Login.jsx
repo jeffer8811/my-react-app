@@ -1,94 +1,95 @@
 import "./Login.css";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../api/axios";
+import api from "../api/axios"; 
+import { toast } from "sonner";
 
 function Login() {
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
-    console.log("🔵 Intentando iniciar sesión...");
-    console.log("📧 Usuario:", usuario);
+    const esDniAlumno = /^\d{8,12}$/.test(usuario) && !password;
 
-    try {
-      const response = await api.post("/auth/login", {
-        username: usuario,
-        password: password,
+    // --- LÓGICA DE ALUMNO ---
+    if (esDniAlumno) {
+      const alumnoPromise = api.get(`/students/search?dni=${usuario}`);
+
+      toast.promise(alumnoPromise, {
+        loading: "Buscando datos del alumno...",
+        success: (res) => {
+          const alumno = res.data;
+          localStorage.setItem("user", JSON.stringify({ ...alumno, role: "STUDENT" }));
+          navigate("/student");
+          return `Hola ${alumno.name}, bienvenido.`;
+        },
+        error: (err) => {
+          if (err.response?.status === 404) return "DNI no registrado";
+          return "Error de conexión";
+        }
       });
-
-      const user = response.data;
-
-      console.log("✅ Login exitoso");
-      console.log("👤 Usuario autenticado:", user);
-
-      localStorage.setItem("user", JSON.stringify(user));
-
-      if (user.role === "ADMIN") {
-        console.log("➡️ Redirigiendo a /Admin");
-        navigate("/Admin");
-      } else if (user.role === "PROFESSOR") {
-        console.log("➡️ Redirigiendo a /teacher");
-        navigate("/teacher");
-      } else {
-        console.log("➡️ Redirigiendo a /student");
-        navigate("/student");
-      }
-
-    } catch (err) {
-      console.error("❌ Error al iniciar sesión");
-      console.error(err);
-
-      setError("Usuario o contraseña incorrectos");
+      return;
     }
+
+    // --- LÓGICA DE ADMIN / PROFESOR ---
+    if (!password) return toast.warning("Ingresa tu contraseña");
+
+    const loginPromise = api.post("/auth/login", {
+      username: usuario,
+      password: password,
+    });
+
+    toast.promise(loginPromise, {
+      loading: "Iniciando sesión...",
+      success: (response) => {
+        const user = response.data;
+        localStorage.setItem("user", JSON.stringify(user));
+
+        // VERIFICACIÓN DE CONTRASEÑA TEMPORAL
+        if (user.role === "TEACHER" && user.mustChangePassword) {
+          toast.info("Por seguridad, debes cambiar tu contraseña temporal");
+          navigate("/change-password"); // <--- Nueva ruta
+          return "Cambio de contraseña requerido";
+        }
+
+        if (user.role === "ADMIN") {
+          navigate("/Admin");
+        } else if (user.role === "TEACHER") {
+          navigate("/teacher");
+        }
+        return `¡Bienvenido, ${user.username}!`;
+      },
+      error: "Usuario o contraseña incorrectos",
+    });
   };
 
   return (
     <div className="login-bg">
-      <div className="bubble b1"></div>
-      <div className="bubble b2"></div>
-      <div className="bubble b3"></div>
-
       <div className="login-wrapper">
-        <div className="login-image">
-          <div className="login-image-content">
-            <h1>Bienvenido 👋</h1>
-            <p>Accede a tu panel académico</p>
-          </div>
-        </div>
-
         <form className="login-form" onSubmit={handleSubmit}>
           <h2>Iniciar sesión</h2>
-
-          <input
-            type="email"
-            placeholder="Usuario"
-            value={usuario}
-            onChange={(e) => setUsuario(e.target.value)}
-            required
-          />
-
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-
-          {error && <p style={{ color: "red" }}>{error}</p>}
-
-          <button type="submit">Entrar</button>
-
-          <p>
-            ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
-          </p>
+          <div className="input-group">
+            <input
+              type="text"
+              placeholder="Usuario o DNI"
+              value={usuario}
+              onChange={(e) => setUsuario(e.target.value)}
+              required
+            />
+          </div>
+          <div className="input-group">
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required={!/^\d{8,12}$/.test(usuario)}
+            />
+          </div>
+          <button type="submit" className="login-button">Entrar</button>
         </form>
       </div>
     </div>
