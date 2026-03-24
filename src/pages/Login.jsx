@@ -1,6 +1,6 @@
 import "./Login.css";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../api/axios"; 
 import { toast } from "sonner";
 
@@ -12,9 +12,9 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // 1. Lógica para Alumnos (Solo DNI, sin contraseña)
     const esDniAlumno = /^\d{8,12}$/.test(usuario) && !password;
 
-    // --- LÓGICA DE ALUMNO ---
     if (esDniAlumno) {
       const alumnoPromise = api.get(`/students/search?dni=${usuario}`);
 
@@ -34,7 +34,7 @@ function Login() {
       return;
     }
 
-    // --- LÓGICA DE ADMIN / PROFESOR ---
+    // 2. Lógica para Admin / Profesor (Requiere contraseña)
     if (!password) return toast.warning("Ingresa tu contraseña");
 
     const loginPromise = api.post("/auth/login", {
@@ -48,18 +48,22 @@ function Login() {
         const user = response.data;
         localStorage.setItem("user", JSON.stringify(user));
 
-        // VERIFICACIÓN DE CONTRASEÑA TEMPORAL
-        if (user.role === "TEACHER" && user.mustChangePassword) {
+        // --- CAMBIO CLAVE: Verificación universal ---
+        // Si el backend dice que debe cambiarla (sea quien sea), lo mandamos
+        if (user.mustChangePassword) {
           toast.info("Por seguridad, debes cambiar tu contraseña temporal");
-          navigate("/change-password"); // <--- Nueva ruta
+          navigate("/change-password");
           return "Cambio de contraseña requerido";
         }
 
+        // --- REDIRECCIÓN SEGÚN ROL ---
+        // Asegúrate de que los strings coincidan con tu Enum de Java
         if (user.role === "ADMIN") {
-          navigate("/Admin");
+          navigate("/admin"); // En minúsculas como en App.jsx
         } else if (user.role === "TEACHER") {
           navigate("/teacher");
         }
+        
         return `¡Bienvenido, ${user.username}!`;
       },
       error: "Usuario o contraseña incorrectos",
@@ -86,6 +90,7 @@ function Login() {
               placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              // Si parece un DNI, la contraseña no es "required" para permitir flujo de alumnos
               required={!/^\d{8,12}$/.test(usuario)}
             />
           </div>

@@ -31,13 +31,31 @@ export default function Admin() {
   };
   const [studentForm, setStudentForm] = useState(initialStudentState);
   const [newTeacherDni, setNewTeacherDni] = useState(""); 
-
+  const [newTeacherName, setNewTeacherName] = useState(""); // <--- Nuevo estado
   const levelGrades = {
     Inicial: ["3 años", "4 años", "5 años"],
     Primaria: ["1°", "2°", "3°", "4°", "5°", "6°"],
     Secundaria: ["1°", "2°", "3°", "4°", "5°"]
   };
+// --- CARGA DE DATOS ---
+  const loadTeacherAndCourseData = async () => {
+    try {
+      // 1. Cargamos los usuarios con rol TEACHER (usando el endpoint que creamos)
+      const resTeachers = await api.get("/users/role/TEACHER");
+      setTeachers(resTeachers.data);
 
+      // 2. Cargamos las asignaciones actuales
+      const resAssignments = await api.get("/assignments");
+      setAssignments(resAssignments.data);
+
+      // 3. Cargamos los cursos para los selects
+      const resCourses = await api.get("/courses");
+      setCourses(resCourses.data);
+    } catch (err) {
+      console.error("Error cargando datos de profesores:", err);
+      toast.error("Error al sincronizar datos de docentes");
+    }
+  };
   // --- EFECTOS ---
   useEffect(() => {
     if (!user || user.role !== "ADMIN") navigate("/login");
@@ -53,41 +71,49 @@ export default function Admin() {
     if (activeTab === "teachers") loadTeacherAndCourseData();
     if (activeTab === "courses") fetchCourses();
     if (activeTab === "students") fetchStudents();
-  }, [activeTab]);
+}, [activeTab]);
 
-  // --- LÓGICA DE PROFESORES ---
-  const loadTeacherAndCourseData = async () => {
-    try {
-      const [resT, resC, resA] = await Promise.all([
-        api.get("/admin/users?role=TEACHER"),
-        api.get("/courses"),
-        api.get("/assignments")
-      ]);
-      setTeachers(resT.data);
-      setCourses(resC.data);
-      setAssignments(resA.data);
-    } catch (err) {
-      toast.error("Error al cargar datos");
-    }
-  };
+// --- LÓGICA DE PROFESORES ---
+const handleCreateTeacher = async (e) => {
+  e.preventDefault();
+  
+  // --- VALIDACIONES DE DNI (Solo 8 números) ---
+  const dniRegex = /^\d{8}$/; 
+  if (!dniRegex.test(newTeacherDni)) {
+    return toast.warning("El DNI debe tener exactamente 8 dígitos numéricos");
+  }
 
-  const handleCreateTeacher = async (e) => {
-    e.preventDefault();
-    try {
-      await api.post("/auth/register", {
-        username: newTeacherDni,
-        password: newTeacherDni,
-        role: "TEACHER"
-      });
-      toast.success("¡Usuario de profesor creado!");
+  // --- VALIDACIÓN DE NOMBRE ---
+  if (newTeacherName.trim().length < 3) {
+    return toast.warning("Por favor, ingresa el nombre completo del profesor");
+  }
+
+  try {
+    const response = await api.post("/auth/register", {
+      username: newTeacherDni,
+      password: newTeacherDni, // Clave inicial = DNI
+      fullName: newTeacherName, // <--- Enviamos el nombre al backend
+      role: "TEACHER"
+    });
+
+    if (response.status === 201 || response.status === 200) {
+      toast.success("¡Profesor registrado exitosamente!");
+      
+      // Limpiamos todo
       setNewTeacherDni("");
+      setNewTeacherName(""); 
       setShowTeacherForm(false);
-      loadTeacherAndCourseData();
-    } catch (err) {
-      toast.error("El DNI ya existe");
+      
+      await loadTeacherAndCourseData();
     }
-  };
-
+  } catch (err) {
+    if (err.response?.status === 409) {
+      toast.error("Este DNI ya está registrado");
+    } else {
+      toast.error("Error al conectar con el servidor");
+    }
+  }
+};
   // --- GESTIÓN DE CURSOS ---
   const fetchCourses = () => {
     api.get("/courses").then(res => setCourses(res.data));
@@ -228,50 +254,102 @@ export default function Admin() {
             </section>
           )}
 
-          {/* PROFESORES */}
+          {/* PROFESORES Y ASIGNACIONES */}
           {activeTab === "teachers" && (
             <section className="tab-panel show">
               <div className="admin-header-flex">
-                <h2>👨‍🏫 Profesores y Cargas</h2>
-                <button className="btn-add" onClick={() => setShowTeacherForm(true)}>+ Registrar Nuevo Profesor</button>
+                <h2>👨‍🏫 Profesores y Cargas Académicas</h2>
+                <button className="btn-add" onClick={() => setShowTeacherForm(true)}>
+                  + Registrar Nuevo Profesor
+                </button>
               </div>
 
               <div className="assignment-grid">
-                <div className="assignment-card">
-                  <h3>Asignar Curso</h3>
-                  <form onSubmit={handleAssignmentSubmit} className="mini-form">
-                    <select required name="teacherId" className="form-input">
-                      <option value="">Docente...</option>
-                      {teachers.map(t => <option key={t.id} value={t.id}>{t.username}</option>)}
-                    </select>
-                    <select required name="courseId" className="form-input">
-                      <option value="">Curso...</option>
-                      {courses.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </select>
-                    <select name="level" className="form-input" required onChange={(e) => setLevel(e.target.value)}>
-                      <option value="">Nivel...</option>
-                      {Object.keys(levelGrades).map(l => <option key={l} value={l}>{l}</option>)}
-                    </select>
-                    <select name="grade" className="form-input" required disabled={!level}>
-                      <option value="">Grado...</option>
-                      {levelGrades[level]?.map(g => <option key={g} value={g}>{g}</option>)}
-                    </select>
-                    <button type="submit" className="btn-assign">Vincular</button>
-                  </form>
-                </div>
+                {/* FORMULARIO DE ASIGNACIÓN ACTUALIZADO */}
+<div className="assignment-card">
+  <h3>Asignar Curso a Docente</h3>
+  <form onSubmit={handleAssignmentSubmit} className="mini-form">
+    
+    <label style={{fontSize: '0.75rem', color: '#666'}}>Seleccionar Docente:</label>
+    <select required name="teacherId" className="form-input">
+      <option value="">Buscar docente...</option>
+      {teachers.map(t => (
+        <option key={t.id} value={t.id}>
+          {/* Aquí unimos el Nombre y el DNI (username) */}
+          {t.fullName ? `${t.fullName} — DNI: ${t.username}` : `DNI: ${t.username}`}
+        </option>
+      ))}
+    </select>
 
+    <label style={{fontSize: '0.75rem', color: '#666'}}>Seleccionar Curso:</label>
+    <select required name="courseId" className="form-input">
+      <option value="">Curso...</option>
+      {courses.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+    </select>
+
+    <div style={{display: 'flex', gap: '10px'}}>
+      <div style={{flex: 1}}>
+        <label style={{fontSize: '0.75rem', color: '#666'}}>Nivel:</label>
+        <select name="level" className="form-input" required onChange={(e) => setLevel(e.target.value)}>
+          <option value="">Nivel...</option>
+          {Object.keys(levelGrades).map(l => <option key={l} value={l}>{l}</option>)}
+        </select>
+      </div>
+      <div style={{flex: 1}}>
+        <label style={{fontSize: '0.75rem', color: '#666'}}>Grado:</label>
+        <select name="grade" className="form-input" required disabled={!level}>
+          <option value="">Grado...</option>
+          {levelGrades[level]?.map(g => <option key={g} value={g}>{g}</option>)}
+        </select>
+      </div>
+    </div>
+
+    <button type="submit" className="btn-assign" style={{marginTop: '10px'}}>
+      Vincular Profesor
+    </button>
+  </form>
+</div>
+
+                {/* TABLA DE ASIGNACIONES ACTIVAS */}
                 <div className="list-card">
                   <table className="modern-table">
-                    <thead><tr><th>DNI Profe</th><th>Curso</th><th>Aula</th><th>Acción</th></tr></thead>
+                    <thead>
+                      <tr>
+                        <th>Profesor</th>
+                        <th>DNI</th>
+                        <th>Curso</th>
+                        <th>Aula</th>
+                        <th>Acción</th>
+                      </tr>
+                    </thead>
                     <tbody>
                       {assignments.map(asig => (
                         <tr key={asig.id}>
-                          <td>{asig.teacher.username}</td>
-                          <td>{asig.course.name}</td>
-                          <td>{asig.level} - {asig.grade}</td>
-                          <td><button className="btn-delete-small" onClick={() => deleteAssignment(asig.id)}>🗑️</button></td>
+                          <td style={{fontWeight: '500'}}>{asig.teacher.fullName || "Sin nombre"}</td>
+                          <td style={{fontSize: '0.85rem', color: '#666'}}>{asig.teacher.username}</td>
+                          <td><span className="tag-course">{asig.course.name}</span></td>
+                          <td>
+                            <small>{asig.level}</small><br/>
+                            <strong>{asig.grade}</strong>
+                          </td>
+                          <td>
+                            <button 
+                              className="btn-delete-small" 
+                              onClick={() => deleteAssignment(asig.id, asig.teacher.fullName, asig.course.name)}
+                              title="Quitar asignación"
+                            >
+                              🗑️
+                            </button>
+                          </td>
                         </tr>
                       ))}
+                      {assignments.length === 0 && (
+                        <tr>
+                          <td colSpan="5" style={{textAlign: 'center', color: '#999', padding: '20px'}}>
+                            No hay cursos asignados todavía.
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -433,25 +511,67 @@ export default function Admin() {
 )}
         </div>
 
-        {/* MODAL REGISTRO PROFESOR */}
-        {showTeacherForm && (
-          <div className="modal">
-            <div className="modal-content">
-              <h3>Nuevo Usuario de Profesor</h3>
-              <form onSubmit={handleCreateTeacher}>
-                <input 
-                  type="text" className="form-input" placeholder="DNI del Profesor"
-                  value={newTeacherDni} onChange={e => setNewTeacherDni(e.target.value)} required 
-                />
-                <p style={{fontSize: '0.75rem', color: '#666', marginTop: '5px'}}>* El DNI será su usuario y clave inicial.</p>
-                <div className="modal-buttons">
-                  <button type="submit" className="btn-save">Crear Acceso</button>
-                  <button type="button" className="btn-cancel" onClick={() => setShowTeacherForm(false)} style={{backgroundColor: '#666', color: 'white', marginLeft: '10px', padding: '8px 15px', borderRadius: '6px', border: 'none'}}>Cerrar</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+{/* MODAL REGISTRO PROFESOR */}
+{showTeacherForm && (
+  <div className="modal">
+    <div className="modal-content">
+      <h3>Registrar Nuevo Profesor</h3>
+      <form onSubmit={handleCreateTeacher}>
+        
+        {/* INPUT NOMBRE COMPLETO */}
+        <label style={{color: 'white', fontSize: '0.8rem', display: 'block', marginBottom: '5px'}}>
+          Nombre Completo:
+        </label>
+        <input 
+          type="text" 
+          className="form-input" 
+          placeholder="Ej: Juan Pérez Mamani"
+          value={newTeacherName} 
+          onChange={e => setNewTeacherName(e.target.value)} 
+          required 
+        />
+
+        {/* INPUT DNI CON BLOQUEO DE 8 NÚMEROS */}
+        <label style={{color: 'white', fontSize: '0.8rem', display: 'block', marginBottom: '5px', marginTop: '10px'}}>
+          DNI (Exactamente 8 números):
+        </label>
+        <input 
+          type="text" 
+          className="form-input" 
+          placeholder="Solo números"
+          maxLength={8} // No permite escribir más de 8 caracteres
+          value={newTeacherDni} 
+          onChange={e => {
+            // Elimina cualquier caracter que no sea un número al instante
+            const soloNumeros = e.target.value.replace(/\D/g, "");
+            setNewTeacherDni(soloNumeros);
+          }} 
+          required 
+        />
+
+        <p style={{fontSize: '0.7rem', color: '#ccc', marginTop: '8px'}}>
+          * El DNI servirá como usuario y contraseña inicial.
+        </p>
+
+        <div className="modal-buttons" style={{marginTop: '20px'}}>
+          <button type="submit" className="btn-save">Crear Acceso</button>
+          <button 
+            type="button" 
+            className="btn-cancel" 
+            style={{backgroundColor: '#666', color: 'white', marginLeft: '10px'}}
+            onClick={() => {
+              setShowTeacherForm(false);
+              setNewTeacherName("");
+              setNewTeacherDni("");
+            }}
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
 
         {/* MODAL REGISTRO ALUMNO (DINÁMICO) */}
         {showStudentForm && (
